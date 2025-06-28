@@ -110,7 +110,60 @@ best_model = grid_search.best_estimator_
 
 # 保存模型
 joblib.dump(best_model, 'XGBoost.pkl')
-
+import streamlit as st
+import joblib
+import numpy as np
+import pandas as pd
+import shap
+import matplotlib.pyplot as plt
+# Load the model
+model = joblib.load('XGBoost.pkl')
+# Define feature options
+cN_options = {    
+    0: 'No lymph node metastasis (0)',    
+    1: 'Lymph node metastasis (1)'    
+}
+# Define feature names
+feature_names = [   
+    "Metabolic index", "cN", "cT", "size"
+]
+# Streamlit user interface
+st.title("LARC Disease Predictor")
+# age: numerical input
+Metabolic index = st.selectbox("Metabolic index (0=Low group, 1=High group):", options=[0, 1], format_func=lambda x: 'Low group (0)' if x == 0 else 'High group (1)')
+size = st.number_input("Tumor size", min_value=0.1, max_value=10.0, value=5.0)
+cT = st.selectbox("cT (1=T1, 2=T2, 3=T3, 4=T4):", options=[1, 2, 3, 4], format_func=lambda x: 'T1 (1)' if x == 0 else 'T2 (2) ,T3 (3), T4 (4)')
+cN = st.selectbox("cN (0=No lymph node metastasis, 1=Lymph node metastasis):", options=[0, 1], format_func=lambda x: 'No lymph node metastasis (0)' if x == 0 else 'Lymph node metastasis (1)')
+# Process inputs and make predictions
+feature_values = [TMRL, cN, distance, size]
+features = np.array([feature_values])
+if st.button("Predict"):    
+    # Predict class and probabilities    
+    predicted_class = model.predict(features)[0]    
+    predicted_proba = model.predict_proba(features)[0]
+    # Display prediction results    
+    st.write(f"**Predicted Class:** {predicted_class}")    
+    st.write(f"**Prediction Probabilities:** {predicted_proba}")
+    # Generate advice based on prediction results    
+    probability = predicted_proba[predicted_class] * 100
+    if predicted_class == 1:        
+        advice = (            
+            f"According to our model, you have a high possibility of Pathological complete response. "            
+            f"The model predicts that your probability of Pathological complete response is {probability:.1f}%. "            
+            "While this is just an estimate, it suggests that you may be at significant risk. "                   
+        ) 
+    else:        
+        advice = (            
+            f"According to our model, you have a low possibility of Pathological complete response. "            
+            f"The model predicts that your probability of not having Pathological complete response is {probability:.1f}%. "                    
+        )
+    st.write(advice)
+    # Calculate SHAP values and display force plot    
+    explainer = shap.TreeExplainer(model)    
+    shap_values = explainer.shap_values(pd.DataFrame([feature_values], columns=feature_names))
+    shap.force_plot(explainer.expected_value, shap_values[0], pd.DataFrame([feature_values], columns=feature_names), matplotlib=True)    
+    plt.savefig("shap_force_plot.png", bbox_inches='tight', dpi=1200)
+    st.image("shap_force_plot.png")
 
 # In[ ]:
 
