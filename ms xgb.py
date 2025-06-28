@@ -125,15 +125,15 @@ cN_options = {
 }
 # Define feature names
 feature_names = [   
-    "Metabolic index", "cN", "cT", "size"
+    "MS", "N", "T", "size"
 ]
 # Streamlit user interface
 st.title("LARC Disease Predictor")
 # age: numerical input
-Metabolic index = st.selectbox("Metabolic index (0=Low group, 1=High group):", options=[0, 1], format_func=lambda x: 'Low group (0)' if x == 0 else 'High group (1)')
+MS = st.selectbox("Metabolic index (0=Low group, 1=High group):", options=[0, 1], format_func=lambda x: 'Low group (0)' if x == 0 else 'High group (1)')
 size = st.number_input("Tumor size", min_value=0.1, max_value=10.0, value=5.0)
-cT = st.selectbox("cT (1=T1, 2=T2, 3=T3, 4=T4):", options=[1, 2, 3, 4], format_func=lambda x: 'T1 (1)' if x == 0 else 'T2 (2) ,T3 (3), T4 (4)')
-cN = st.selectbox("cN (0=No lymph node metastasis, 1=Lymph node metastasis):", options=[0, 1], format_func=lambda x: 'No lymph node metastasis (0)' if x == 0 else 'Lymph node metastasis (1)')
+T = st.selectbox("cT (1=T1, 2=T2, 3=T3, 4=T4):", options=[1, 2, 3, 4], format_func=lambda x: 'T1 (1)' if x == 0 else 'T2 (2) ,T3 (3), T4 (4)')
+N = st.selectbox("cN (0=No lymph node metastasis, 1=Lymph node metastasis):", options=[0, 1], format_func=lambda x: 'No lymph node metastasis (0)' if x == 0 else 'Lymph node metastasis (1)')
 # Process inputs and make predictions
 feature_values = [TMRL, cN, distance, size]
 features = np.array([feature_values])
