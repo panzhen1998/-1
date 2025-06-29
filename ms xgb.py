@@ -6,15 +6,12 @@
 
 import pandas as pd
 import numpy as np
-
-
-# In[2]:
-
-
-data = pd.read_csv('C:/Users/27854/Desktop/mss.csv')
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+data = pd.read_csv('mss.csv')
 df = pd.DataFrame(data)
 
-
+# In[2]:
 # In[3]:
 
 
